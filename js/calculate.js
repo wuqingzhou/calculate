@@ -64,6 +64,21 @@ if(typeof window.top.wqzNumber != "undefined"){
 			var len2 = cd2==undefined?0:cd2.length;
 			obj.m1_mul = Math.pow(10,len1);
 			obj.m2_mul = Math.pow(10,len2);
+		},
+		
+		/**
+		 * 传入两个操作数和一个操作符，计算结果
+		 */
+		cusCalculate: function(m1,m2,opStr){
+			if(opStr=="+"){
+				return this.add(m1,m2);
+			}else if(opStr=="-"){
+				return this.sub(m1,m2);
+			}else if(opStr=="*"){
+				return this.mul(m1,m2);
+			}else if(opStr=="/"){
+				return this.div(m1,m2);
+			}
 		}
 		
 	};
