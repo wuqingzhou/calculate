@@ -3,181 +3,129 @@
 	<head>
 		<meta charset="utf-8" />
 		<title></title>
-		<style>
-			.wqz_forbidSel{ moz-user-select: -moz-none;-moz-user-select: none;-webkit-user-select:none;-ms-user-select:none;user-select:none;}
-		</style>
 	</head>
 	<style>
 		*{ box-sizing: border-box;}
-		.calBox{ width:322px; height: 362px; border: 1px solid #CCCCCC; margin: 40px auto; font-family: arial; color: #333;
-			font-weight: bold;}
-		.calBox .rstStr{ font-size:14px; font-weight: weight;height: 30px;line-height: 30px; padding:0 10px; text-align: right;}
-		.calBox .rst{ font-size: 34px; text-align: right;width: 100%; height: 60px;line-height: 60px; padding:0 10px; 
-			border-bottom: 1px solid #ccc;}
-		.calBox .cub{ width:80px; height: 60px; font-size: 18px; display: block; float: left; cursor: pointer;
-			text-align: center; line-height: 60px; background: #F2F2F2;moz-user-select: -moz-none;-moz-user-select: none;
-			-webkit-user-select:none;-ms-user-select:none;user-select:none;}
-		.calBox .cub:hover{ background: #DADADA; }
+		.box{ width:322px; height:392px; border: 1px solid #CCCCCC; margin: 20px auto; font-size: 20px; font-weight: bold;
+			color: #333333; font-family: arial;}
+		.calStr{ width: 100%; height: 30px; line-height: 30px; text-align: right; padding: 0 10px; font-size: 14px;}
+		.rst{ width: 100%; height: 60px; line-height: 60px; text-align: right; padding: 0 10px; font-size: 30px;
+			border-bottom: 1px solid #CCCCCC;}
+		.btn{ width:80px; height: 60px; text-align: center; line-height: 60px; float: left; cursor: pointer;
+			moz-user-select: -moz-none;-moz-user-select: none;-webkit-user-select:none;-ms-user-select:none;user-select:none;
+			transition: font-size 0.1s;}
+		.btn:hover{ background: #C0C0C0; }
+		.btn:active{ background: #b0b0b0; font-size: 32px; color:#FF9800;}
 	</style>
 	<body>
-		<div class="calBox">
-			<div class="rstStr">232323-9</div>
+		<div class="box">
+			<div class="calStr"></div>
 			<div class="rst">0</div>
-			<span class="cub">预留</span>
-			<span class="cub clear">clear</span>
-			<span class="cub back">back</span>
-			<span class="cub div op">/</span>
-			<span class="cub num n7">7</span>
-			<span class="cub num n8">8</span>
-			<span class="cub num n9">9</span>
-			<span class="cub mul op">*</span>
-			<span class="cub num n4">4</span>
-			<span class="cub num n5">5</span>
-			<span class="cub num n6">6</span>
-			<span class="cub sub op">-</span>
-			<span class="cub num n1">1</span>
-			<span class="cub num n2">2</span>
-			<span class="cub num n3">3</span>
-			<span class="cub add op">+</span>
-			<span class="cub">预留</span>
-			<span class="cub num n0">0</span>
-			<span class="cub num point">.</span>
-			<span class="cub equal">=</span>
+			<span class="btn">保留</span>
+			<span class="btn">保留</span>
+			<span class="btn back">保留</span>
+			<span class="btn clear">clear</span>
+			<span class="btn num">7</span>
+			<span class="btn num">8</span>
+			<span class="btn num">9</span>
+			<span class="btn op add">+</span>
+			<span class="btn num">4</span>
+			<span class="btn num">5</span>
+			<span class="btn num">6</span>
+			<span class="btn op sub">-</span>
+			<span class="btn num">1</span>
+			<span class="btn num">2</span>
+			<span class="btn num">3</span>
+			<span class="btn op mul">*</span>
+			<span class="btn num">0</span>
+			<span class="btn num">.</span>
+			<span class="btn equal">=</span>
+			<span class="btn op div">/</span>
 		</div>
 	<script type="text/javascript" src="../jquery-1.11.2.min.js" ></script>
 	<script type="text/javascript" src="js/calculate.js" ></script>
 	<script>
 		$(function(){
+			var $calStr = $(".calStr");
 			var $rst = $(".rst");
-			var $rstStr = $(".rstStr");
 			var $clear = $(".clear");
 			var $back = $(".back");
 			var $num = $(".num");
 			var $op = $(".op");
 			var $equal = $(".equal");
-			var allOpChar = ["+","-","*","/"];
-			var allOpNum = ["1","2","3","4","5","6","7","8","9","0"];
-			var curOpNumArr = [0];	// 操作数
-			var curOpChar = [];		// 操作符
 			
-			// 清除
-			$clear.on("click",function(){
-				$rst.text("0");
-				curOpNumArr = [0];
-				curOpChar = [];
-				testInfo();
-			});
+			var firstNum = "";
+			var secondNum = "";
+			var opChar = "";
+			var resultValue = null;
+			var calEnd = false;
 			
-			// 回退
-			$back.on("click",function(){
-				var txt = $rst.text();
-				var backChar = txt.charAt(txt.length-1);		// 被删掉的字符
-				var ntxt = txt.substring(0,txt.length-1);
-				if(txt.length>1){
-					$rst.text(ntxt);
-					if(curOpNumArr.length==1){	// 1个操作数。0或1个操作符
-						curOpNumArr = [ntxt];
-						curOpChar = [];
-					}
-					if(curOpNumArr.length==2){	// 2个操作数，一个操作符
-						var secondNum = curOpNumArr.pop();
-						if(secondNum.toString().length>1){
-							secondNum = secondNum.substring(0,secondNum.length-1);
-							secondNum *= 1;
-							curOpNumArr.push(secondNum);
-						}
-					}
-				}else{
-					$rst.text("0");
-					curOpNumArr = [0];
-					curOpChar = [];
-				}
-				testInfo();
-			});
-			
-			// 数字
+			// 按下数字
 			$num.on("click",function(){
-				var s = $rst.text();		// 当前值
-				var c = $(this).text();		// 输入的字符
-			
-				if(allOpNum.indexOf(c) != -1){
-					
-				}else if(allOpChar.indexOf(c) != -1){
-					
-				}
-				// 显示
-				if(txt==="0"){
-					if(ctxt=="."){
-						$rst.text("0.");
-					}else if(allOpNum.indexOf(ctxt) != -1){
-						$rst.text(ctxt);
-					}else{
-						$rst.text(txt + ctxt);
-					}
+				var cc = $(this).text();
+				var rst;
+				if( (opChar!="" && secondNum==="") || calEnd){
+					calEnd = false;
+					rst = cc;
 				}else{
-					$rst.text(txt + ctxt);
+					rst = $rst.text() + cc;
 				}
-				testInfo();
+				rst = adjustToNum(rst);
+				$rst.text(rst);
 				
-				// 值
-				if(curOpNumArr.length==0 && curOpChar.length==0){
-					if(allOpNum.indexOf(ctxt) != -1){
-						curOpNumArr = [ctxt=="."?0:ctxt];
-					}else if(allOpChar.indexOf(ctxt) != -1){
-						curOpNumArr = [0];
-						curOpChar = [ctxt];
-					}
-				}else if(curOpNumArr.length==1 && curOpChar.length==0){
-					if(allOpNum.indexOf(ctxt) != -1){
-						curOpNumArr[1] = ctxt=="."?0:ctxt;
-						txt + ctxt
-					}else if(allOpChar.indexOf(ctxt) != -1){
-						curOpChar = [ctxt];
-					}
-				}else if(curOpNumArr.length==1 && curOpChar.length==1){
-					if(allOpNum.indexOf(ctxt) != -1){
-						curOpNumArr[1] = ctxt=="."?0:ctxt;
-					}else if(allOpChar.indexOf(ctxt) != -1){
-						curOpChar = [ctxt];
-					}
+				if(opChar===""){
+					firstNum = adjustToNum(rst);
+					firstNum = parseFloat(firstNum);
+				}else{
+					secondNum = adjustToNum(rst);
+					secondNum = parseFloat(secondNum);
 				}
-			})
-			
-			// 四则运算
-			$op.on("click",function(){
-				var ctxt = $(this).text();
-				curOpChar = [ctxt];
-				$rst.text(curOpNumArr[0] + ctxt);
-				testInfo();
-			})
-			
-			// 等于运算
-			$equal.on("click",function(){
-				var result = 0;
-				if(curOpNumArr.length==2 && curOpChar.length>1){
-					var a = curOpNumArr[0];
-					var b = curOpNumArr[1];
-					var op = curOpChar[0];
-					
-					a *= 1; b *= 1;
-					result = wqzNumber.cusCalculate(a,b,op);
-					$rst.text(result);
-					curOpNumArr = [result];
-					curOpChar = [];
-				}
-				testInfo();
+				showCalStr();
 			});
 			
-			function testInfo(){
-				console.info(curOpNumArr);
-				console.info(curOpChar);
-				console.info("");
+			// 按下操作符
+			$op.on("click",function(){
+				if(secondNum===""){
+					opChar =  $(this).text();
+					showCalStr();
+				}
+			})
+			
+			// 按下等于号
+			$equal.on("click",function(){
+				resultValue = wqzNumber.cusCalculate(firstNum,secondNum,opChar);
+				$rst.text(resultValue);
+				calEnd = true;
+				firstNum = "";
+				secondNum = "";
+				opChar = "";
+			})
+			
+			$clear.on("click",function(){
+				$calStr.text("");
+				$rst.text(0);
+				firstNum = "0";
+				secondNum = "";
+				opChar = "";
+			});
+			
+			function adjustToNum(numStr){
+				// 最多只能有一个小数点
+				var arr = numStr.match(/\./g)||[];
+				if(arr.length==2){
+					numStr = numStr.substring(0,numStr.length-1);
+				}
+				// 去掉前面的第一个0(0后面不是小数点)
+				if( numStr[0]=="0" && numStr.length>1 && numStr[1]!="." ){
+					numStr = numStr.substring(1);
+				}
+				return numStr;
+			}
+			
+			function showCalStr(){
+				$calStr.text(firstNum+opChar+secondNum);
 			}
 		})
-		
-		
-		//var rst = wqzNumber.div(m1,m2);
-		//console.info(rst);
 	</script>
 	</body>
 </html>

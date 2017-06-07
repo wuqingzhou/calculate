@@ -8,23 +8,23 @@
  * 	
  */
 
-if(typeof window.top.wqzNumber != "undefined"){
-	console.error("命名冲突！wqzcal变量已经被申明了");
+if(typeof window.wqzNumber != "undefined"){
+	console.error("命名冲突！wqzNumber变量已经被申明了");
 }else{
-	window.top.wqzNumber = {
+	window.wqzNumber = {
 		// 加法
-		add:function(a,b){
+		add:function(m1,m2){
 			var obj = {};
 			this.changeNum(m1,m2,obj);
-			var rst = obj.m1_int*obj.m2_int/(obj.m1_mul*obj.m2_mul);
+			var rst = (obj.m1_int*obj.m2_mul + obj.m2_int*obj.m1_mul)/(obj.m1_mul*obj.m2_mul);
 			return rst;
 		},
 		
 		// 减法。a-b
-		sub:function(a,b){
+		sub:function(m1,m2){
 			var obj = {};
 			this.changeNum(m1,m2,obj);
-			var rst = obj.m1_int*obj.m2_int/(obj.m1_mul*obj.m2_mul);
+			var rst = (obj.m1_int*obj.m2_mul - obj.m2_int*obj.m1_mul)/(obj.m1_mul*obj.m2_mul);
 			return rst;
 		},
 		
@@ -37,10 +37,10 @@ if(typeof window.top.wqzNumber != "undefined"){
 		},
 		
 		// 除法。a/b
-		div:function(a,b){
+		div:function(m1,m2){
 			var obj = {};
 			this.changeNum(m1,m2,obj);
-			var rst = (obj.m1_int/obj.m2_int)*(obj.m2_mul/obj.m1_mul);
+			var rst = (obj.m1_int/obj.m2_int)/(obj.m1_mul/obj.m2_mul);
 			return rst;
 		},
 		
@@ -66,8 +66,9 @@ if(typeof window.top.wqzNumber != "undefined"){
 			obj.m2_mul = Math.pow(10,len2);
 		},
 		
-		/**
-		 * 传入两个操作数和一个操作符，计算结果
+		/*
+		 * m1,m2表示两个操作数
+		 * opStr表示运算符
 		 */
 		cusCalculate: function(m1,m2,opStr){
 			if(opStr=="+"){
@@ -80,6 +81,5 @@ if(typeof window.top.wqzNumber != "undefined"){
 				return this.div(m1,m2);
 			}
 		}
-		
 	};
 }
